@@ -1,7 +1,9 @@
 import os
 import pathlib
 import traceback
-
+from src.geektime.util.CountDownLatch import  CountDownLatch
+import _thread
+import shutil
 
 def downloadfile(session, url, targetfilename, latch):
     # targetfilename is an absolutepath
@@ -53,10 +55,54 @@ def downloadfile(session, url, targetfilename, latch):
             print("download finish - ", targetfilename)
 
             # if download finish let's remove the directory
-
+            shutil.rmtree(tempdir)
     except Exception as e:
         print(traceback.format_exc())
         #print("Error found", str(e))
 
     finally:
         latch.count_down()
+
+def compose_target_file(targetfolder, name, quality):
+    return str(targetfolder) + os.sep + name + quality + ".mp4"
+
+def compose_target_recordfile(targetfolder, name, quality):
+    return compose_target_file(targetfolder, name, quality) + ".ok"
+
+
+def multi_thread_download(session, courses, targetfolder, **kwargs):
+    # download all courses into targetfolder
+    path = pathlib.Path(targetfolder)
+    if not path.exists() or  path.is_file():
+        os.makedirs(targetfolder)
+    print("Will download into ", targetfolder)
+    videoQuality = kwargs.get("quality", "sd")
+
+    # fetch all tasks
+    names = []
+    m3u8s = []
+    for c in courses:
+        if not c.accessok or c.video_map is None:
+            continue
+        if videoQuality not in c.video_map:
+            print("The video not exists this quality, skip", c.name, " videos:", c.video_map)
+            continue
+        if os.path.exists(compose_target_recordfile(targetfolder, c.name, videoQuality)):
+            print("The video is there ignore it", c.name)
+            continue
+        names.append(c.name)
+        m3u8s.append(c.video_map[videoQuality]["url"])
+
+    threadcount = int(kwargs.get("threads", 10))
+
+    print("Will download total tasks:", len(names), " with threads ", threadcount)
+    while len(names) > 0:
+        count = min(len(names), threadcount)
+        latch = CountDownLatch(count)
+        for i in range(count):
+            name = names.pop()
+            m3u8 = m3u8s.pop()
+            targetfilename = compose_target_file(targetfolder, name, videoQuality)
+            print("\t\t start download ", name)
+            _thread.start_new_thread(downloadfile, (session, m3u8, targetfilename, latch))
+        latch.await()
