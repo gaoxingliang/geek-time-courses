@@ -9,7 +9,7 @@ The below functions are provided:
 Now provided:
 
  1. [QCon 2019 beijing video and ppt](courses/QCon2019Beijing/README.md) <br>
- 2. TBD
+ 2. [nginx核心知识100讲](courses/nginx/README.md)
 
 # how to download geektime videos
 clone this repo and run with:
