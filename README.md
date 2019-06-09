@@ -3,14 +3,7 @@ Geektime courses/极客时间  https://time.geekbang.org/ sharing course repo<br
 Username or passwords will <font color="red"><b>NOT</b></font> be collected.<br>
 
 The below functions are provided:
-1. sharing some courses videos and pdfs.
-2. provide a tool to parse and download videos.
-
-Now provided:
-
- 1. [QCon 2019 beijing video and ppt](courses/QCon2019Beijing/README.md) <br>
- 2. [nginx核心知识100讲](courses/nginx/README.md)
- 3. [透视HTTP协议](courses/透视HTTP协议/README.md)
+1. provide a tool to parse and download videos.
 
 # how to download geektime videos
 clone this repo and run with:
@@ -46,3 +39,4 @@ python3 -U yourCellphone -P yourPassword -p geektime.py https://time.geekbang.or
 ```
 Note: NO passwords will be collected. check our source code.  Thanks for your SHARING.
 
+免责声明: 所有资源来自互联网, 侵权删除.
